@@ -1,0 +1,15 @@
+# Docker 忽略文件
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+.env
+.pytest_cache/
+.vscode/
+.git/
+.gitignore
+
+# 忽略日志和状态文件，建议外部挂载
+*.log
+state.json
+config.yaml

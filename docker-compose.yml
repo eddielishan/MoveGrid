@@ -1,0 +1,14 @@
+services:
+  jijin-reminder:
+    build: .
+    container_name: jijin-strategy
+    restart: always
+    volumes:
+      # 挂载配置文件，修改宿主机 config.yaml 容器内实时生效
+      - ./config.yaml:/app/config.yaml
+      # 挂载状态文件，确保容器重启后持仓和交易记录不丢失
+      - ./state.json:/app/state.json
+      # 挂载日志目录到宿主机（可选）
+      - ./logs:/app/logs
+    environment:
+      - TZ=Asia/Shanghai

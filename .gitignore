@@ -1,0 +1,26 @@
+# Python 编译文件
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# 虚拟环境
+.venv/
+env/
+venv/
+ENV/
+
+# 配置文件与敏感信息（重要：config.yaml 通常含 token，不建议上传，可以传一个 .example）
+# state.json 包含你的持仓数据，不建议上传
+state.json
+config.yaml
+grid_trading.log
+
+# 开发工具
+.vscode/
+.idea/
+.pytest_cache/
+.DS_Store
+
+# 容器化产生的临时文件
+*.tmp
