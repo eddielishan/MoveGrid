@@ -1,0 +1,29 @@
+# MoveGrid 示例配置文件模板
+# 请将此文件重命名为 config.yaml 后使用
+
+# 基金列表配置
+funds:
+  - fund_code: "1.515300"         # 基金代码（示例为红利低波ETF）
+    grid_spacing: 0.02            # 网格间距（如 0.02 代表 2% 一格）
+    max_position: 20              # 策略允许的最大仓位
+    min_position: 0               # 策略允许的最小仓位
+    initial_position: 10          # 初始持有份额
+    trade_unit: 1                 # 单次买卖的交易单位
+    initial_price: 0              # 初始中心价（0表示自动获取当前价作为中心）
+    move_trigger: 0.05            # 触发网格整体移动的阈值（如单边偏离 5% 时移动）
+
+    # 独立定投提醒配置
+    invest_enabled: true          # 是否开启周定投提醒
+    invest_amount: 1000           # 每次周定投的金额或份额（仅用于显示）
+    invest_interval_days: 14      # 定投最小间隔（14代表每两周）
+    invest_weekday: 4             # 定投触发的星期数（1-7，4代表星期四）
+
+# 通知渠道配置
+notify:
+  wechat_webhook: ""              # 企业微信机器人 Webhook 地址（可选）
+  pushplus_token: "YOUR_TOKEN"    # PushPlus Token（用于微信公众号提醒）
+
+# 系统巡检时间（24小时制列表）
+schedule_times:
+  - "15:10"
+  - "20:00"
