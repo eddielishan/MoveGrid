@@ -21,12 +21,16 @@ CONFIG_FILE = os.path.join(BASE_DIR, "config.yaml")
 STATE_FILE = os.path.join(BASE_DIR, "state.json")
 
 # 日志配置
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR, exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
     handlers=[
         logging.StreamHandler(),
-        logging.FileHandler(os.path.join(BASE_DIR, "grid_trading.log"), encoding="utf-8"),
+        logging.FileHandler(os.path.join(LOG_DIR, "grid_trading.log"), encoding="utf-8"),
     ],
 )
 logger = logging.getLogger(__name__)
@@ -78,9 +82,20 @@ def save_state(state: StrategyState) -> None:
 
     # 先写入临时文件，再原子替换，防止写一半中断导致文件完全损坏
     tmp_file = STATE_FILE + ".tmp"
-    with open(tmp_file, "w", encoding="utf-8") as f:
-        json.dump(states, f, ensure_ascii=False, indent=2)
-    os.replace(tmp_file, STATE_FILE)
+    try:
+        with open(tmp_file, "w", encoding="utf-8") as f:
+            json.dump(states, f, ensure_ascii=False, indent=2)
+        os.replace(tmp_file, STATE_FILE)
+    except OSError as e:
+        # 在 Docker 环境下，如果 state.json 是以单文件形式挂载的，os.replace 会报 [Errno 16] Device or resource busy
+        # 此时降级为直接覆盖写入
+        if e.errno == 16:
+            with open(STATE_FILE, "w", encoding="utf-8") as f:
+                json.dump(states, f, ensure_ascii=False, indent=2)
+            if os.path.exists(tmp_file):
+                os.remove(tmp_file)
+        else:
+            raise e
     
     logger.info("状态已保存: %s", state.to_dict())
 
@@ -112,7 +127,12 @@ def run_strategy() -> None:
             signal = evaluate(fc, state, fund_data)
 
             # 4. 发送通知
-            notify(signal, wechat_webhook, pushplus_token)
+            from strategy import Signal
+            show_hold = notify_cfg.get("show_hold", True)
+            
+            # 仅在不是 HOLD 信号，或者开启了 show_hold 时发送通知
+            if signal.signal != Signal.HOLD or show_hold:
+                notify(signal, wechat_webhook, pushplus_token)
 
             # 5. 保存状态
             save_state(state)

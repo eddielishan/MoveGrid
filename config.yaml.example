@@ -22,6 +22,7 @@ funds:
 notify:
   wechat_webhook: ""              # 企业微信机器人 Webhook 地址（可选）
   pushplus_token: "YOUR_TOKEN"    # PushPlus Token（用于微信公众号提醒）
+  show_hold: true                 # 是否显示 HOLD 信号（true=显示，false=仅显示买入/卖出）
 
 # 系统巡检时间（24小时制列表）
 schedule_times:
