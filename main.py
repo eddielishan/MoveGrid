@@ -102,6 +102,13 @@ def save_state(state: StrategyState) -> None:
 
 def run_strategy() -> None:
     """执行一次完整的策略流程"""
+    from datetime import datetime
+    today = datetime.now()
+    # isoweekday: 1-5 是周一到周五, 6 是周六, 7 是周日
+    if today.isoweekday() in [6, 7]:
+        logger.info("今天是周末（%s），系统自动进入休眠模式，暂不检查策略。", today.strftime("%A"))
+        return
+
     logger.info("=" * 60)
     logger.info("开始执行网格交易策略检查")
     logger.info("=" * 60)
